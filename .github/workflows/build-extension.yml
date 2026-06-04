@@ -1,0 +1,31 @@
+name: Build and Package Extension
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Package Extension
+        run: |
+          mkdir -p dist
+          # Compress all extension files into a clean zip, excluding Git & CI files
+          zip -r dist/chrome-math-blocker.zip . -x "*.git*" "*.github*" "zip_extension.py" "*.zip"
+
+      - name: Upload Package Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chrome-math-blocker-extension
+          path: dist/chrome-math-blocker.zip
+          retention-days: 90
