@@ -1,13 +1,13 @@
-name: Build and Package Extension
+name: Build, Package, and Release Extension
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -23,9 +23,13 @@ jobs:
           # Compress all extension files into a clean zip, excluding Git & CI files
           zip -r dist/chrome-math-blocker.zip . -x "*.git*" "*.github*" "zip_extension.py" "*.zip"
 
-      - name: Upload Package Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: chrome-math-blocker-extension
-          path: dist/chrome-math-blocker.zip
-          retention-days: 90
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Generate a tag based on the workflow run number
+          TAG="v1.0.${{ github.run_number }}"
+          gh release create "$TAG" dist/chrome-math-blocker.zip \
+            --title "Release $TAG" \
+            --notes "Automated release of the Math Lock extension built from commit ${{ github.sha }}." \
+            --latest
