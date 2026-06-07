@@ -162,6 +162,12 @@ body {
 }
 
 /* Buttons */
+.popup-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .btn {
   width: 100%;
   padding: 10px;
@@ -189,6 +195,22 @@ body {
 }
 
 .btn-primary svg {
+  width: 14px;
+  height: 14px;
+}
+
+.btn-danger {
+  background: rgba(255, 56, 96, 0.1);
+  color: var(--neon-red);
+  border: 1px solid rgba(255, 56, 96, 0.3);
+}
+
+.btn-danger:hover {
+  background: rgba(255, 56, 96, 0.2);
+  box-shadow: 0 4px 12px rgba(255, 56, 96, 0.2);
+}
+
+.btn-danger svg {
   width: 14px;
   height: 14px;
 }

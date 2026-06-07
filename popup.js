@@ -2,6 +2,7 @@
 const activeUnlocksList = document.getElementById('active-unlocks-list');
 const noUnlocks = document.getElementById('no-unlocks');
 const btnOpenDashboard = document.getElementById('btn-open-dashboard');
+const btnLockAll = document.getElementById('btn-lock-all');
 
 let intervalId = null;
 
@@ -28,6 +29,7 @@ function updatePopupList() {
     if (activeUnlocks.length === 0) {
       activeUnlocksList.innerHTML = '';
       noUnlocks.classList.remove('hidden');
+      btnLockAll.classList.add('hidden');
       if (intervalId) {
         clearInterval(intervalId);
         intervalId = null;
@@ -36,6 +38,7 @@ function updatePopupList() {
     }
 
     noUnlocks.classList.add('hidden');
+    btnLockAll.classList.remove('hidden');
     
     // Render list
     activeUnlocksList.innerHTML = '';
@@ -86,6 +89,17 @@ function runCountdownTimers() {
 // Setup Event Listeners
 btnOpenDashboard.addEventListener('click', () => {
   chrome.runtime.openOptionsPage();
+});
+
+btnLockAll.addEventListener('click', () => {
+  chrome.storage.local.get(['unlockedUntil'], (data) => {
+    const unlockedUntil = data.unlockedUntil || {};
+    const alarmNames = Object.keys(unlockedUntil).map(d => `lock-${d}`);
+    chrome.storage.local.set({ unlockedUntil: {} }, () => {
+      alarmNames.forEach(name => chrome.alarms.clear(name));
+      updatePopupList();
+    });
+  });
 });
 
 // Load popup state on open
